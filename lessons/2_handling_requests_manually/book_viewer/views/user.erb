@@ -1,0 +1,14 @@
+<p><strong><%= params[:name].capitalize %></strong></p>
+<ul>
+  <li>Email: <%= @email %></li>
+  <li>Interests: <%= @interests %></li>
+</ul>
+
+<br>
+
+<p>Other Users: </p>
+<% @other_users.each.with_index do |name, id| %>
+  <div class="user_info" id="<%= id %>">
+    <p class="name"><strong><a href="/users/<%= name %>"><%= name.capitalize %></a></strong></p>
+  </div>
+<% end %>

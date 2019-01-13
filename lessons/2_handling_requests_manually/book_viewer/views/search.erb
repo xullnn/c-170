@@ -1,0 +1,25 @@
+<h2 class="content-subhead">Search</h2>
+
+<form action="/search" method="get">
+  <input name="query" value="<%= params[:query] %>">
+  <button type="submit">Search</button>
+</form>
+
+<!-- # results = { chapter_number => { title: '' , paragraphes: {1=>"have done", 220 => "have done"  } }, .... } -->
+
+<div class="search_results">
+  <% if @results != {} %>
+    <ul>
+    <% @results.each do |chapter_number, infos|%>
+      <li><a href="/chapters/<%= chapter_number %>" class="pure-menu-link"><%= infos[:title] %></a></li>
+      <ul>
+        <% infos[:paragraphes].each do |id, paragraph|%>
+          <li><a href="/chapters/<%= chapter_number %>#<%= id %>"><%= highlight_key_word(paragraph) %></a></li>
+        <% end %>
+      </ul>
+    <% end %>
+    </ul>
+  <% else %>
+    <p>Sorry, no content matched.</p>
+  <% end %>
+</div>

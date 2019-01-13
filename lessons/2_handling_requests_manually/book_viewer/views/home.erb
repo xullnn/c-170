@@ -1,0 +1,10 @@
+<h2 class="content-subhead">Table of Contents</h2>
+<div class="pure-menu">
+  <ul class="pure-menu-list">
+    <li class="pure-menu-item">
+      <% @contents.each.with_index(1) do |chp_title, i|%>
+        <a href="/chapters/<%= i %>" class="pure-menu-link"><%= chp_title %></a>
+      <% end %>
+    </li>
+  </ul>
+</div>

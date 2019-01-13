@@ -1,6 +1,7 @@
 class Monroe
   def erb(filename, local = {})
     b = binding
+    p binding
     message = local[:message]
     content = File.read("views/#{filename}.erb")
     ERB.new(content).result(b)

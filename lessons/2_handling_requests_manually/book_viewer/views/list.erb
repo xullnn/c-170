@@ -1,0 +1,13 @@
+<div class="files_in_public">
+  <h2>Files under public directory: </h2>
+    <% if params[:sort] == 'descend'%>
+      <a href="/">Sort ascending</a>
+    <% else %>
+      <a href="/?sort=descend">Sort descending</a>
+    <% end %>
+  <ol>
+  <% @files_in_public.each do |name| %>
+    <li><a href="/<%= name %>"><%= name %></a></li>
+  <% end %>
+  </ol>
+</div>

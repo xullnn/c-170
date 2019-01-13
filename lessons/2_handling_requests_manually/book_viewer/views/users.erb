@@ -1,0 +1,18 @@
+<% @users.each.with_index do |name, id| %>
+  <div class="user_info" id="<%= id %>">
+    <p class="name"><strong><a href="/users/<%= name %>"><%= name.capitalize %></a></strong></p>
+  </div>
+<% end %>
+
+<!--
+{
+ :jamy=>
+  {:email=>"jamy.rustenburg@gmail.com",
+   :interests=>["woodworking", "cooking", "reading"]},
+ :nora=>
+  {:email=>"nora.alnes@yahoo.com",
+   :interests=>["cycling", "basketball", "economics"]},
+ :hiroko=>
+  {:email=>"hiroko.ohara@hotmail.com",
+   :interests=>["politics", "history", "birding"]}
+ } -->
