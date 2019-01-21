@@ -170,7 +170,7 @@ end
 post "/:filename/keep_latest" do
   validate_user
   file_path = File.join(data_path, params[:filename])
-  cmsfile = CMSFile.new.read(File.read(file_path))
+  cmsfile = CMSFile.new.read(File.read(file_path), file_path)
   latest_version_content = cmsfile.latest_content_pair.last
   File.open(file_path, 'w') { |f| f.write(CMSFile.format_input(latest_version_content)) }
   session[:message] = "Udated successfully, only left latest version."
