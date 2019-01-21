@@ -63,7 +63,7 @@ Whether you’ve come to ask questions or to generously share what you know, joi
 
 ```ruby
 class CMSFile
-  attr_reader :contents
+  attr_accessor :contents
 
   def initialize
     @contents = {}
@@ -86,14 +86,25 @@ class CMSFile
     self
   end
 
-  def render_str
-    @contents.map do |timestamp, content|
+  def render_str(type=:plain)
+    plain_text = @contents.map do |timestamp, content|
       "---\n#{timestamp}\n\n#{content}\n"
     end.join("\n")
+    case type
+    when :plain
+      plain_text
+    when :html
+      plain_text.gsub!("\n", "</br>")
+    end
   end
 
-  def format_time(time)
+  def self.format_time(time)
     time.strftime("%F %H:%M:%S")
+  end
+
+  def self.format_input(content)
+    timestamp = format_time(Time.new)
+    "---\n#{timestamp}\n#{content}\n"
   end
 end
 ```

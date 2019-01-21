@@ -20,6 +20,10 @@ class CMSFile
   def read(string, file_path)
     regexp_for_version = /\d{4}-.+\:\d{2}\b/
     if string.strip == ''
+<<<<<<< HEAD
+=======
+      pry
+>>>>>>> 01_version_control
       CMSFile.initialize_empty_file(file_path)
     elsif !string.match(regexp_for_version) || !string.match(/---\n/)
       string = CMSFile.initialize_version!(string, file_path)
