@@ -6,6 +6,7 @@ require 'pry'
 require 'fileutils'
 require 'yaml'
 require 'bcrypt'
+require_relative 'file_version'
 
 VALID_FILE_TYPES = ['.png', '.jpg', '.jpeg', '.bmp', '.pdf']
 
@@ -25,8 +26,11 @@ end
 get "/:filename" do
   headers["Content-Type"] = "text/html; charset=utf-8"
   file_path = File.join(data_path, params[:filename])
+  @file_name = params[:filename]
+  version = params[:version] || 'unspecified'
   if File.exist?(file_path)
-    load_file_content(file_path)
+    load_file_content(file_path, version)
+    erb :display_file
   else
     session[:message] = "#{params[:filename]} does not exist."
     redirect "/"
@@ -39,19 +43,21 @@ get "/:filename/edit" do
   file_path = File.join(data_path, params[:filename])
 
   @file = params[:filename]
-  @content = File.read(file_path)
+  cmsfile = CMSFile.new.read(File.read(file_path), file_path)
+  @content = cmsfile.latest_content_pair.last.strip
+  @version_time = cmsfile.latest_content_pair.first
   erb :edit
 end
 
 post "/:filename" do
   validate_user
   headers["Content-Type"] = "text/html; charset=utf-8"
-  file_path = File.join(data_path, params[:filename])
+  file_path = File.join(data_path, File.basename(params[:filename]))
   @file = params[:filename]
   content = File.read(file_path)
   updated_content = params[:content]
   if updated_content && updated_content != content
-    File.write(file_path, updated_content)
+    File.open(file_path, 'a') { |f| f.write(CMSFile.format_input(updated_content)) }
   end
   session[:message] = "#{params[:filename]} has been updated."
   redirect "/"
@@ -70,8 +76,8 @@ post "/files/create" do
   if invalid_file_name?(new_name)
     session[:message] = "A name is required."
   else
-    file_path = data_path + new_name
-    File.new(file_path, 'w+')
+    file_path = data_path + "/" + new_name
+    CMSFile.initialize_empty_file(file_path)
     session[:message] = "#{new_name} was created."
   end
   redirect "/"
@@ -120,12 +126,7 @@ post "/users/signin" do
     session[:message] = "Welcome!"
     redirect "/"
   else
-    # if wrong name was given it would still retained in params[:user_name]
-    # because the post request happened first
     session[:message] = "Invalid Credentials"
-    # session[:user_name] = user_name
-    # redirect "/users/signin"
-
     status 422
     erb :signin
   end
@@ -166,6 +167,16 @@ post "/images/upload" do
   redirect "/"
 end
 
+post "/:filename/keep_latest" do
+  validate_user
+  file_path = File.join(data_path, params[:filename])
+  cmsfile = CMSFile.new.read(File.read(file_path))
+  latest_version_content = cmsfile.latest_content_pair.last
+  File.open(file_path, 'w') { |f| f.write(CMSFile.format_input(latest_version_content)) }
+  session[:message] = "Udated successfully, only left latest version."
+  redirect "/#{params[:filename]}"
+end
+
 # ----------------------------------------------------------------------
 
 def validate_signup_name_and_password(name, password)
@@ -196,14 +207,25 @@ def markdown_to_html(content)
   markdown.render(content)
 end
 
-def load_file_content(file_path)
+def load_file_content(file_path, version)
   filetype = File.extname(params[:filename])
   content = File.read(file_path)
-    if filetype == '.md'
-      markdown_to_html(content)
-    elsif filetype == '.txt'
-      content
-    end
+  @cmsfile = CMSFile.new.read(content, file_path)
+  validate_version(version, @cmsfile)
+  if filetype == '.md'
+    md_contents = @cmsfile.contents.map { |t, text| [t, markdown_to_html(text)] }.to_h
+    @cmsfile.contents = md_contents
+  end
+  @version = version
+  @cmsfile
+end
+
+def validate_version(version, cmsfile)
+  timestamps = cmsfile.contents.keys
+  unless timestamps.include?(version) || ['unspecified', 'all'].include?(version)
+    session[:message] = "Version #{version} does not exist."
+    redirect "/"
+  end
 end
 
 def data_path
@@ -235,7 +257,7 @@ def load_user_credentials
 end
 
 def invalid_file_name?(name)
-  name.strip.empty? || File.extname(name).empty?
+  name.empty? || File.extname(name).empty?
 end
 
 def user_signed_in?
