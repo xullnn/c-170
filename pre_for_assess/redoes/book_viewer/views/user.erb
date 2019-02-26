@@ -1,0 +1,11 @@
+<p><strong>Email:</strong> <%= @email %></p>
+<p><strong>Interests:</strong> <%= @interests %></p>
+
+<br><br>
+
+<p><strong>Other users:</strong></p>
+<ul>
+  <% @other_names.each do |name| %>
+    <li><a href="/users/<%= name %>"><%= name %></a></li>
+  <% end %>
+<ul>

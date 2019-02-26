@@ -1,0 +1,26 @@
+<h2 class="content-subhead">Search</h2>
+
+<form action="/search" method="get">
+  <input name="query" value="<%= params[:query] %>">
+  <button type="submit">Search</button>
+</form>
+
+<% if @results && !@results.empty? %>
+  <h2>Results for '<%= params[:query]%>'</h2>
+  <ul>
+    <% @results.each do |hash| %>
+      <li><%= hash['title'] %></li>
+      <ul class="paragraphes">
+        <% hash['id_and_paragraphes'].each do |id, paragraph| %>
+          <li>
+            <a href=/chapters/<%= hash['number'] %>#<%= id %>>
+              <%= emphasize_query(paragraph, params[:query]) %>
+            </a>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Sorry, no matches were found.</p>
+<% end %>

@@ -1,0 +1,4 @@
+<h2 class="content-subhead"><%= @title %></h2>
+<% @paragraphes_with_ids.each do |id, paragraph| %>
+  <p id="<%= id %>"><%= paragraph %></p>
+<% end %>

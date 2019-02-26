@@ -1,0 +1,14 @@
+body {
+  padding: 1em;
+  font-family: sans-serif;
+}
+
+#flash_message {
+  padding: 10px;
+  margin: 5px;
+  background-color: #FFFF99;
+}
+
+form.inline {
+  display: inline;
+}

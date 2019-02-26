@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="application.css" type="text/css">
+  </head>
+
+  <body>
+    <% if session[:message] %>
+      <p id="flash_message"><%= session.delete(:message)%></p>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>

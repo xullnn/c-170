@@ -1,0 +1,12 @@
+<div class="sort_btns">
+  <% if params[:sort_order] == 'descending' %>
+    <a href="/?sort_order=asceding"> Sort Ascending </a>
+  <% else %>
+    <a href="/?sort_order=descending"> Sort Ascending </a>
+  <% end %>
+</div>
+<ul>
+<% @filenames.each do |filename| %>
+  <li><a href="/<%= filename %>"><%= filename %></a></li>
+<% end %>
+</ul>
